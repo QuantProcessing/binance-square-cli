@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "binance-square": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "./dist/mcp.js"
+      ],
+      "env": {}
+    }
+  }
+}

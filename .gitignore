@@ -1,0 +1,15 @@
+node_modules/
+dist/
+*.log
+.env
+.DS_Store
+
+# Local test artefacts
+feed.json
+out.json
+captured-urls.log
+/tmp/
+
+# Editor / tool state
+*.swp
+.claude/

@@ -1,0 +1,9 @@
+node_modules
+dist
+.git
+.DS_Store
+*.log
+/tmp
+feed.json
+out.json
+captured-urls.log
