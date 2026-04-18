@@ -3,6 +3,14 @@ import { scrapePage } from './scraper.js';
 import { SquareClient } from './client.js';
 import { prettyFeed, prettyUser, prettyUserPosts, prettyPostDetail } from './pretty.js';
 
+interface CommonOpts {
+  raw?: boolean;
+  pretty?: boolean;
+  headful?: boolean;
+  debug?: boolean;
+  lang?: string;
+}
+
 export interface ScrapeOpts {
   apiPattern?: string;
   settle?: number;
@@ -12,45 +20,28 @@ export interface ScrapeOpts {
   headful?: boolean;
 }
 
-export interface FeedOpts {
+export interface FeedOpts extends CommonOpts {
   page?: number;
   size?: number;
   scene?: string;
   pages?: number;
   excludeIds?: string;
-  raw?: boolean;
-  pretty?: boolean;
-  headful?: boolean;
-  debug?: boolean;
 }
 
-export interface UserOpts {
+export interface UserOpts extends CommonOpts {
   uid?: boolean;
-  raw?: boolean;
-  pretty?: boolean;
-  headful?: boolean;
-  debug?: boolean;
 }
 
-export interface UserPostsOpts {
+export interface UserPostsOpts extends CommonOpts {
   timeOffset?: number;
   filterType?: string;
-  raw?: boolean;
-  pretty?: boolean;
-  headful?: boolean;
-  debug?: boolean;
 }
 
-export interface PostOpts {
-  raw?: boolean;
-  pretty?: boolean;
-  headful?: boolean;
-  debug?: boolean;
-}
+export type PostOpts = CommonOpts;
 
 export async function runFeed(opts: FeedOpts): Promise<void> {
   const client = new SquareClient();
-  await client.init({ headless: !opts.headful, debug: opts.debug });
+  await client.init({ headless: !opts.headful, debug: opts.debug, lang: opts.lang });
   try {
     const seed = (opts.excludeIds ?? '')
       .split(',')
@@ -87,7 +78,7 @@ export async function runFeed(opts: FeedOpts): Promise<void> {
 
 export async function runUser(idOrName: string, opts: UserOpts): Promise<void> {
   const client = new SquareClient();
-  await client.init({ headless: !opts.headful, debug: opts.debug });
+  await client.init({ headless: !opts.headful, debug: opts.debug, lang: opts.lang });
   try {
     const resp = opts.uid
       ? await client.userBySquareUid(idOrName)
@@ -100,7 +91,7 @@ export async function runUser(idOrName: string, opts: UserOpts): Promise<void> {
 
 export async function runUserPosts(squareUid: string, opts: UserPostsOpts): Promise<void> {
   const client = new SquareClient();
-  await client.init({ headless: !opts.headful, debug: opts.debug });
+  await client.init({ headless: !opts.headful, debug: opts.debug, lang: opts.lang });
   try {
     const resp = await client.userPosts(squareUid, {
       timeOffset: opts.timeOffset,
@@ -114,7 +105,7 @@ export async function runUserPosts(squareUid: string, opts: UserPostsOpts): Prom
 
 export async function runPost(postId: string, opts: PostOpts): Promise<void> {
   const client = new SquareClient();
-  await client.init({ headless: !opts.headful, debug: opts.debug });
+  await client.init({ headless: !opts.headful, debug: opts.debug, lang: opts.lang });
   try {
     const resp = await client.postDetail(postId);
     emit(resp, opts, prettyPostDetail);

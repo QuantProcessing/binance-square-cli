@@ -59,8 +59,11 @@ Shared flags for all API commands:
 | `--raw` | Full `ComposeResponse` envelope |
 | `--headful` | Show the browser window (debugging) |
 | `--debug` | Log diagnostics to stderr (sniffed headers, etc.) |
+| `--lang <code>` | URL locale: `en` (default), `zh-CN`, `zh-TW`, `ja`, `ko`, ... |
 
 Default output: `resp.data` unwrapped.
+
+`--lang` switches the `/<lang>/square` URL the browser opens — the sniffed `lang` header then flows into every API call, so Binance returns localized fields (e.g. user tags `"低频交易者"` vs `"Occasional Trader"`). For long-lived server / MCP processes set `BSQ_LANG=zh-CN` in the environment instead.
 
 ## MCP server
 

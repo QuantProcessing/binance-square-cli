@@ -39,7 +39,8 @@ export class SquareClient {
   private page: Page | null = null;
   private sniffedHeaders: Record<string, string> = {};
 
-  async init(opts: { headless?: boolean; debug?: boolean } = {}): Promise<void> {
+  async init(opts: { headless?: boolean; debug?: boolean; lang?: string } = {}): Promise<void> {
+    const lang = opts.lang ?? process.env.BSQ_LANG ?? 'en';
     this.browser = await chromium.launch({
       headless: opts.headless ?? true,
       args: [
@@ -51,8 +52,11 @@ export class SquareClient {
     this.context = await this.browser.newContext({
       userAgent:
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
-      locale: 'en-US',
+      locale: lang === 'en' ? 'en-US' : lang,
       viewport: { width: 1440, height: 900 },
+      extraHTTPHeaders: {
+        'accept-language': lang === 'en' ? 'en-US,en;q=0.9' : `${lang},en;q=0.5`,
+      },
     });
     this.page = await this.context.newPage();
 
@@ -71,7 +75,7 @@ export class SquareClient {
       }
     });
 
-    await this.page.goto(`${BASE}/en/square`, {
+    await this.page.goto(`${BASE}/${lang}/square`, {
       waitUntil: 'domcontentloaded',
       timeout: 30_000,
     });

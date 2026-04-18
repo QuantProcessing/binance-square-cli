@@ -22,6 +22,7 @@ program
 
 const commonOutputOpts = (c: Cmd): Cmd =>
   c
+    .option('--lang <code>', 'Language / URL locale (e.g. en, zh-CN, zh-TW, ja)', process.env.BSQ_LANG ?? 'en')
     .option('--raw', 'Emit the full ComposeResponse envelope', false)
     .option('--pretty', 'Emit a compact, human-friendly projection', false)
     .option('--headful', 'Run with a visible browser window', false)
