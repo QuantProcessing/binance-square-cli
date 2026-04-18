@@ -81,9 +81,12 @@ All tools accept `raw: true` to return the full envelope; default is the compact
 ### Run it
 
 ```bash
-npm run mcp                 # dev (tsx)
-node dist/mcp.js            # built
+npm run mcp                        # dev (tsx)
+node dist/mcp.js                   # built
+BSQ_LANG=zh-CN node dist/mcp.js    # Chinese locale
 ```
+
+Language is set per-process via `BSQ_LANG` (default `en`) — switching languages requires restarting the server, as it affects the single long-lived browser's sniffed headers.
 
 ### Wire into Claude Code / Desktop / Cursor
 
@@ -120,12 +123,13 @@ The server keeps one long-lived `SquareClient` across the whole session — Chro
 A thin Fastify wrapper over the same `SquareClient`, for consumption from other services. One long-lived browser shared across all requests.
 
 ```bash
-npm run server               # dev (tsx)
-node dist/server.js          # built
+npm run server                         # dev (tsx)
+node dist/server.js                    # built
 PORT=8080 node dist/server.js
+BSQ_LANG=zh-CN node dist/server.js     # Chinese locale (process-level)
 ```
 
-No auth, no cache — put it behind a reverse proxy / internal network if you need either.
+No auth, no cache — put it behind a reverse proxy / internal network if you need either. Language is fixed per-process via `BSQ_LANG`; to serve multiple languages, run multiple instances behind a router.
 
 Endpoints (all GET):
 
@@ -158,9 +162,10 @@ curl 'http://localhost:3000/post/303702474979186?pretty=1'
 docker build -t bsq .
 
 docker run --rm bsq feed --pretty
+docker run --rm bsq feed --lang zh-CN --pretty
 docker run --rm bsq user gzsq1234 --pretty
-docker run --rm -i --entrypoint node bsq dist/mcp.js              # MCP mode
-docker run --rm -p 3000:3000 --entrypoint node bsq dist/server.js # REST server
+docker run --rm -e BSQ_LANG=zh-CN -i --entrypoint node bsq dist/mcp.js              # MCP mode
+docker run --rm -e BSQ_LANG=zh-CN -p 3000:3000 --entrypoint node bsq dist/server.js # REST server
 ```
 
 Base image: `mcr.microsoft.com/playwright:v1.48.0-jammy` (Chromium + CJK fonts preinstalled, so non-Latin post bodies render/serialize correctly).
