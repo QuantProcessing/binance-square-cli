@@ -1,5 +1,7 @@
 # binance-square-cli
 
+**English** · [简体中文](./README.zh-CN.md)
+
 Unofficial CLI and MCP server for [Binance Square](https://www.binance.com/en/square). Binance does not expose a public API for Square, so this tool drives a headless Chromium (via Playwright) to sniff the browser's fingerprint headers once, then replays direct POST/GET calls against the internal `/bapi/composite/*` endpoints.
 
 Read-only. No login required.
