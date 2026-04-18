@@ -5,18 +5,21 @@
   "type": "module",
   "bin": {
     "bsq": "./dist/index.js",
-    "bsq-mcp": "./dist/mcp.js"
+    "bsq-mcp": "./dist/mcp.js",
+    "bsq-server": "./dist/server.js"
   },
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "mcp": "tsx src/mcp.ts",
+    "server": "tsx src/server.ts",
     "start": "node dist/index.js",
     "postinstall": "playwright install chromium"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
     "commander": "^12.1.0",
+    "fastify": "^5.1.0",
     "playwright": "^1.48.0"
   },
   "devDependencies": {

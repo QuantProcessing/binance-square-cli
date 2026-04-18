@@ -112,6 +112,43 @@ Docker variant:
 
 The server keeps one long-lived `SquareClient` across the whole session — Chromium stays alive, sniffed headers are reused. Shuts down cleanly on `SIGINT` / `SIGTERM`.
 
+## HTTP server
+
+A thin Fastify wrapper over the same `SquareClient`, for consumption from other services. One long-lived browser shared across all requests.
+
+```bash
+npm run server               # dev (tsx)
+node dist/server.js          # built
+PORT=8080 node dist/server.js
+```
+
+No auth, no cache — put it behind a reverse proxy / internal network if you need either.
+
+Endpoints (all GET):
+
+| Route | Params |
+| --- | --- |
+| `/health` | — |
+| `/feed` | `page`, `size`, `scene`, `pages`, `excludeIds` (csv) |
+| `/user` | `username` **or** `squareUid` |
+| `/user/:squareUid/posts` | `timeOffset`, `filterType` |
+| `/post/:id` | — |
+
+Output shape controlled by query flags:
+
+- default: `resp.data` unwrapped
+- `?pretty=1`: compact projection (id / author / time / stats / url)
+- `?raw=1`: full `ComposeResponse` envelope
+
+Examples:
+
+```bash
+curl 'http://localhost:3000/feed?pretty=1&pages=3'
+curl 'http://localhost:3000/user?username=gzsq1234&pretty=1'
+curl 'http://localhost:3000/user/New5jCFqC0D5Opz178dklQ/posts?pretty=1'
+curl 'http://localhost:3000/post/303702474979186?pretty=1'
+```
+
 ## Docker
 
 ```bash
@@ -119,7 +156,8 @@ docker build -t bsq .
 
 docker run --rm bsq feed --pretty
 docker run --rm bsq user gzsq1234 --pretty
-docker run --rm -i --entrypoint node bsq dist/mcp.js   # MCP mode
+docker run --rm -i --entrypoint node bsq dist/mcp.js              # MCP mode
+docker run --rm -p 3000:3000 --entrypoint node bsq dist/server.js # REST server
 ```
 
 Base image: `mcr.microsoft.com/playwright:v1.48.0-jammy` (Chromium + CJK fonts preinstalled, so non-Latin post bodies render/serialize correctly).
@@ -148,6 +186,7 @@ All routed through a live Playwright page, so the axios interceptor's fingerprin
 src/
   index.ts      CLI entry (commander)
   mcp.ts        MCP server (stdio)
+  server.ts     HTTP server (Fastify)
   client.ts     SquareClient: browser lifecycle, header sniff, post()/get()
   scraper.ts    Response-interception fallback (for endpoints not yet reversed)
   browser.ts    Playwright launch helper
